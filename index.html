@@ -1,22 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-D3VXNE9Q57"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-D3VXNE9Q57');
-    </script>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-PMPB6CBN');</script>
-    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuidemos Nuestros Parques</title>
@@ -28,6 +12,113 @@
             box-sizing:border-box;
             font-family: Arial, Helvetica, sans-serif;
         }
+
+        /* Botón que abre el modal */
+.btn-registro {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 30px;
+    cursor: pointer;
+    margin: 1rem auto;
+    display: block;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-registro:hover {
+    background: #2563eb;
+    transform: scale(1.02);
+}
+
+/* Fondo oscuro detrás del modal */
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(3px);
+}
+
+/* Contenido del modal (la ventana blanca) */
+.modal-contenido {
+    background: white;
+    margin: 10% auto;
+    padding: 2rem;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 20px;
+    box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+    position: relative;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-contenido h3 { 
+    color: #000; /* Fuerza el color negro */ 
+    margin-bottom: 1.5rem; 
+    text-align: center; 
+}
+
+
+/* Animación de entrada */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos de los campos dentro del modal */
+.modal-contenido input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.modal-contenido input:focus {
+    border-color: #3b82f6;
+    outline: none;
+}
+
+.modal-contenido button {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.modal-contenido button:hover {
+    background: #2563eb;
+}
+
+/* Botón de cerrar (la X) */
+.cerrar {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #aaa;
+    transition: 0.2s;
+}
+
+.cerrar:hover {
+    color: #ef4444;
+}
+
+
+
 
         body{
             background: #f4f4f4;
@@ -147,13 +238,27 @@
     </style>
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PMPB6CBN"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
-    <header>
-        <h1>¡Cuidemos Nuestros Parques!</h1>
 
+    <header>
+
+<!-- Botón que abre el modal -->
+<button id="btnAbrirModal" class="btn-registro">👤 Registrarse</button>
+
+<!-- El Modal (ventana flotante) -->
+<div id="modalRegistro" class="modal">
+    <div class="modal-contenido">
+        <span id="cerrarModal" class="cerrar">&times;</span>
+        <h3>📋 Crear una cuenta</h3>
+        <input type="text" id="nombres" placeholder="Nombres">
+        <input type="text" id="apellidos" placeholder="Apellidos">
+        <input type="email" id="email" placeholder="Correo electrónico">
+        <button onclick="registrarUsuario()">Registrarse</button>
+        <p id="mensajeRegistro"></p>
+    </div>
+</div>
+
+        <h1>¡Cuidemos Nuestros Parques!</h1>
+        
         <p>
             Los parques son espacios de vida, recreación y naturaleza.
             Mantenerlos limpios es responsabilidad de todos.
@@ -256,6 +361,48 @@
     </div>
 
     </footer>
+
+   <script>
+  window.suscribir = async function() {
+    // --- Capturar el correo y elementos del DOM ---
+    const email = document.getElementById('emailInput').value;
+    const mensaje = document.getElementById('mensaje');
+
+    // --- Validación básica ---
+    if (!email || !email.includes('@')) {
+      mensaje.innerHTML = '❌ Correo inválido';
+      mensaje.style.color = 'red';
+      return;
+    }
+
+    // --- Mensaje de "guardando" ---
+    mensaje.innerHTML = '📡 Guardando...';
+    mensaje.style.color = 'blue';
+
+    // --- Enviar correo a Google Sheets ---
+    try {
+      // ⚠️ ¡CAMBIE ESTA URL POR LA SUYA COMPLETA! ⚠️
+      const response = await fetch('https://script.google.com/macros/s/AKfycbwJYSxsxz9KvN-7-KbNI6sLTOLThZMs65emkIcI5UZnjVztwOFPmC726zfavRHUG363/exec', {
+        method: 'POST',
+        mode: 'no-cors', // Necesario para evitar errores de CORS
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, activo: true })
+      });
+      // Con 'no-cors', no podemos leer la respuesta. Asumimos éxito si no hay error.
+      mensaje.innerHTML = '✅ ¡Suscripción exitosa! Gracias.';
+      mensaje.style.color = 'green';
+      document.getElementById('emailInput').value = ''; // Limpiar el campo
+
+    } catch (error) {
+      console.error('Error al guardar:', error);
+      mensaje.innerHTML = '❌ Error al guardar. Intenta de nuevo.';
+      mensaje.style.color = 'red';
+    }
+  };
+</script>
+
+
+<script src="script.js"></script>
 
 </body>
 </html>
