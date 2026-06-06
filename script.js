@@ -30,18 +30,28 @@ function limpiarModal() {
     document.getElementById('mensajeRegistro').innerHTML = '';
 }
 
-
 async function registrarUsuario() {
     const nombres = document.getElementById('nombres').value;
     const apellidos = document.getElementById('apellidos').value;
     const email = document.getElementById('email').value;
     const mensaje = document.getElementById('mensajeRegistro');
 
-    if (!nombres || !apellidos || !email ) {
+    // Validación de campos vacíos
+    if (!nombres || !apellidos || !email) {
         mensaje.innerHTML = '❌ Todos los campos son obligatorios';
         mensaje.style.color = 'red';
         return;
     }
+
+    // ✅ VALIDACIÓN DE CORREO REAL (NUEVO)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        mensaje.innerHTML = '❌ Correo inválido. Ejemplo: nombre@gmail.com';
+        mensaje.style.color = 'red';
+        return;
+    }
+
+
 
     mensaje.innerHTML = '📡 Registrando...';
     mensaje.style.color = 'blue';
