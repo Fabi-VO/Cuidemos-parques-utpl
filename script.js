@@ -90,7 +90,7 @@ async function registrarUsuario() {
     // 📍 FUNCIÓN PARA ENVIAR LOS DATOS A GOOGLE SHEETS
     async function enviarDatos(lat, lng) {
         try {
-            await fetch('https://script.google.com/macros/s/AKfycbx_RifyL-uUw7M3a9Sp8CyEF4jsTiFDQbkIPvtI7gMlX0LJ8HX6Am6xO73ltNko57VU/exec', {
+            await fetch('https://script.google.com/macros/s/AKfycbxdz--3eU3UBrEbwhQ4bAfEVMBldh0OzBSuyDZo_hNv75HyRux2y5SmVHdjTkwFvMPa/exec', {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
