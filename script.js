@@ -31,6 +31,89 @@ function limpiarModal() {
 }
 
 
+
+window.addEventListener("load", registrarVisita);
+
+async function registrarVisita() {
+
+    // 🚫 Evitar duplicados por navegador
+    const yaRegistrado = localStorage.getItem("visita_registrada");
+
+    if (yaRegistrado) return;
+
+    localStorage.setItem("visita_registrada", "true");
+
+    const userAgent = navigator.userAgent;
+    const idioma = navigator.language;
+    const resolucion = `${screen.width}x${screen.height}`;
+
+    // 🖥️ Detectar sistema operativo
+    let sistema = "Desconocido";
+
+    if (userAgent.includes("Windows")) sistema = "Windows";
+    else if (userAgent.includes("Mac")) sistema = "MacOS";
+    else if (userAgent.includes("Android")) sistema = "Android";
+    else if (userAgent.includes("iPhone") || userAgent.includes("iPad")) sistema = "iOS";
+    else if (userAgent.includes("Linux")) sistema = "Linux";
+
+    // 🌐 Detectar navegador
+    let navegador = "Desconocido";
+
+    if (userAgent.includes("Edg")) navegador = "Edge";
+    else if (userAgent.includes("Chrome")) navegador = "Chrome";
+    else if (userAgent.includes("Firefox")) navegador = "Firefox";
+    else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) navegador = "Safari";
+
+    // 📍 Ubicación por IP
+    let ciudad = "Desconocida";
+    let pais = "Desconocido";
+
+    try {
+
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+
+        ciudad = data.city || "Desconocida";
+        pais = data.country_name || "Desconocido";
+
+    } catch (e) {
+        console.log("No se pudo obtener ubicación");
+    }
+
+    // 📡 Enviar a Google Sheets
+    try {
+
+        await fetch("https://script.google.com/macros/s/AKfycbxh9CD3HBJilvJhQA6dzKdKJR-yb2-DS-uNW7V14iAqzFdfGltN6q9SqrGyod9Pq6eH/exec", {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                tipo: "visita",
+                sistema_operativo: sistema,
+                navegador: navegador,
+                idioma: idioma,
+                resolucion: resolucion,
+                ciudad: ciudad,
+                pais: pais,
+                user_agent: userAgent
+            })
+        });
+
+        console.log("📊 Visita registrada");
+
+    } catch (error) {
+
+        console.log("Error enviando datos:", error);
+    }
+}
+
+
+///////
+
+
+
 async function registrarUsuario() {
     const nombres = document.getElementById('nombres').value;
     const apellidos = document.getElementById('apellidos').value;
