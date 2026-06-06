@@ -32,198 +32,99 @@ function limpiarModal() {
 
 
 
-window.addEventListener("load", registrarVisita);
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKBIBDd0aHOL-VHQGeFiFK2_4lRZvbwY_-QoMXlvW8Cr8Lemse-aiBiVn_OVoU2Wbk/exec";
 
-async function registrarVisita() {
+/* =========================
+   1. VISITA AUTOMÁTICA
+========================= */
 
-    // 🚫 Evitar duplicados por navegador
-    const yaRegistrado = localStorage.getItem("visita_registrada");
+async function registrarUsuario() {
 
-    if (yaRegistrado) return;
+    const nombres = document.getElementById('nombres').value.trim();
+    const apellidos = document.getElementById('apellidos').value.trim();
+    const email = document.getElementById('email').value.trim();
 
-    localStorage.setItem("visita_registrada", "true");
+    const mensaje = document.getElementById('mensajeRegistro');
+
+    if (!nombres || !apellidos || !email) {
+        mensaje.innerHTML = "❌ Completa todos los campos";
+        mensaje.style.color = "red";
+        return;
+    }
 
     const userAgent = navigator.userAgent;
     const idioma = navigator.language;
-    const resolucion = `${screen.width}x${screen.height}`;
 
-    // 🖥️ Detectar sistema operativo
+    // SO
     let sistema = "Desconocido";
-
     if (userAgent.includes("Windows")) sistema = "Windows";
     else if (userAgent.includes("Mac")) sistema = "MacOS";
     else if (userAgent.includes("Android")) sistema = "Android";
     else if (userAgent.includes("iPhone") || userAgent.includes("iPad")) sistema = "iOS";
     else if (userAgent.includes("Linux")) sistema = "Linux";
 
-    // 🌐 Detectar navegador
+    // Navegador (MEJORADO)
     let navegador = "Desconocido";
-
     if (userAgent.includes("Edg")) navegador = "Edge";
-    else if (userAgent.includes("Chrome")) navegador = "Chrome";
+    else if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) navegador = "Chrome";
     else if (userAgent.includes("Firefox")) navegador = "Firefox";
     else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) navegador = "Safari";
 
-    // 📍 Ubicación por IP
     let ciudad = "Desconocida";
     let pais = "Desconocido";
 
     try {
-
         const res = await fetch("https://ipapi.co/json/");
         const data = await res.json();
+        ciudad = data.city || ciudad;
+        pais = data.country_name || pais;
+    } catch {}
 
-        ciudad = data.city || "Desconocida";
-        pais = data.country_name || "Desconocido";
+    mensaje.innerHTML = "📡 Registrando...";
+    mensaje.style.color = "blue";
 
-    } catch (e) {
-        console.log("No se pudo obtener ubicación");
-    }
+    function enviar(lat = null, lng = null) {
 
-    // 📡 Enviar a Google Sheets
-    try {
-
-        await fetch("https://script.google.com/macros/s/AKfycbxh9CD3HBJilvJhQA6dzKdKJR-yb2-DS-uNW7V14iAqzFdfGltN6q9SqrGyod9Pq6eH/exec", {
+        fetch(SCRIPT_URL, {
             method: "POST",
-            mode: "no-cors",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                tipo: "visita",
+                tipo: "registro",
+                nombres,
+                apellidos,
+                email,
                 sistema_operativo: sistema,
-                navegador: navegador,
-                idioma: idioma,
-                resolucion: resolucion,
-                ciudad: ciudad,
-                pais: pais,
+                navegador,
+                idioma,
+                ciudad,
+                pais,
+                latitud: lat,
+                longitud: lng,
                 user_agent: userAgent
             })
         });
 
-        console.log("📊 Visita registrada");
-
-    } catch (error) {
-
-        console.log("Error enviando datos:", error);
-    }
-}
-
-
-///////
-
-
-
-async function registrarUsuario() {
-    const nombres = document.getElementById('nombres').value;
-    const apellidos = document.getElementById('apellidos').value;
-    const email = document.getElementById('email').value;
-    const mensaje = document.getElementById('mensajeRegistro');
-
-    // Validaciones
-    if (!nombres || !apellidos || !email) {
-        mensaje.innerHTML = '❌ Todos los campos son obligatorios';
-        mensaje.style.color = 'red';
-        return;
+        mensaje.innerHTML = "✅ Registrado. Gracias por ser parte de este proyecto local";
+        mensaje.style.color = "green";
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        mensaje.innerHTML = '❌ Correo inválido. Ejemplo: nombre@gmail.com';
-        mensaje.style.color = 'red';
-        return;
-    }
-
-    // 🔍 CAPTURAR DATOS DEL DISPOSITIVO (sin permisos)
-    const userAgent = navigator.userAgent;
-    const idioma = navigator.language;
-    const resolucion = `${screen.width}x${screen.height}`;
-
-    // Detectar SO y navegador (simplificado)
-    let sistema = "Desconocido";
-    let navegador = "Desconocido";
-
-    if (userAgent.includes("Windows")) sistema = "Windows";
-    else if (userAgent.includes("Mac")) sistema = "MacOS";
-    else if (userAgent.includes("Linux")) sistema = "Linux";
-    else if (userAgent.includes("Android")) sistema = "Android";
-    else if (userAgent.includes("iPhone") || userAgent.includes("iPad")) sistema = "iOS";
-
-    if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) navegador = "Chrome";
-    else if (userAgent.includes("Firefox")) navegador = "Firefox";
-    else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) navegador = "Safari";
-    else if (userAgent.includes("Edg")) navegador = "Edge";
-
-    mensaje.innerHTML = '📡 Registrando...';
-    mensaje.style.color = 'blue';
-
-    // 🌐 Obtener ubicación por IP (ciudad/país aproximado, sin permiso)
-    let ciudad = "Desconocida";
-    let pais = "Desconocido";
-    
-    try {
-        const geoResponse = await fetch('https://ipapi.co/json/');
-        const geoData = await geoResponse.json();
-        ciudad = geoData.city || "Desconocida";
-        pais = geoData.country_name || "Desconocido";
-    } catch (e) {
-        console.log("No se pudo obtener geolocalización por IP");
-    }
-
-    // 📍 FUNCIÓN PARA ENVIAR LOS DATOS A GOOGLE SHEETS
-    async function enviarDatos(lat, lng) {
-        try {
-            await fetch('https://script.google.com/macros/s/AKfycbzhFK5nxQIcln3laIuGf58jjq_AqLukzz7AjenLarO3XTuWpk9Sbi4BrYMNX92d6V4C/exec', {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    nombres, apellidos, email,
-                    fecha: new Date(),
-                    sistema_operativo: sistema,
-                    navegador: navegador,
-                    idioma: idioma,
-                    resolucion: resolucion,
-                    ciudad: ciudad,
-                    pais: pais,
-                    latitud: lat || "No permitió",
-                    longitud: lng || "No permitió",
-                    user_agent: userAgent
-                })
-            });
-            
-            mensaje.innerHTML = '✅ ¡Registro exitoso! Gracias.';
-            mensaje.style.color = 'green';
-            
-            setTimeout(() => {
-                modal.style.display = 'none';
-                limpiarModal();
-            }, 2000);
-            
-        } catch (error) {
-            console.error(error);
-            mensaje.innerHTML = '❌ Error al registrar. Intenta de nuevo.';
-            mensaje.style.color = 'red';
-        }
-    }
-
-    // 📡 PEDIR UBICACIÓN EXACTA (GPS) - SOLO DESPUÉS DE LOS DATOS BÁSICOS
     if (navigator.geolocation) {
+
         navigator.geolocation.getCurrentPosition(
-            (posicion) => {
-                const lat = posicion.coords.latitude;
-                const lng = posicion.coords.longitude;
-                console.log(`📍 Ubicación exacta: ${lat}, ${lng}`);
-                enviarDatos(lat, lng);
+            (pos) => {
+                enviar(pos.coords.latitude, pos.coords.longitude);
             },
-            (error) => {
-                console.log("Usuario no permitió la ubicación o error:", error.message);
-                enviarDatos(null, null);  // Enviar sin ubicación exacta
+            () => {
+                enviar();
+            },
+            {
+                timeout: 8000
             }
         );
-    } else {
-        console.log("Navegador no soporta geolocalización");
-        enviarDatos(null, null);
-    }
-                    }
 
+    } else {
+        enviar();
+    }
+}
