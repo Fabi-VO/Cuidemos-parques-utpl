@@ -32,7 +32,7 @@ function limpiarModal() {
 
 
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKBIBDd0aHOL-VHQGeFiFK2_4lRZvbwY_-QoMXlvW8Cr8Lemse-aiBiVn_OVoU2Wbk/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnNS3FKpKd_VfXg0mjVaLsq1bo8L-PPwr5nSOZxrD1Pie8qSX_bMLaBcIYdK043fa9/exec";
 
 /* =========================
    1. VISITA AUTOMÁTICA
