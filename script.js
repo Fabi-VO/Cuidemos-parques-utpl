@@ -85,26 +85,39 @@ async function registrarUsuario() {
 
     function enviar(lat = null, lng = null) {
 
+
+
         fetch(SCRIPT_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                tipo: "registro",
-                nombres,
-                apellidos,
-                email,
-                sistema_operativo: sistema,
-                navegador,
-                idioma,
-                ciudad,
-                pais,
-                latitud: lat,
-                longitud: lng,
-                user_agent: userAgent
-            })
-        });
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+        "Content-Type": "text/plain"
+    },
+    body: JSON.stringify({
+        tipo: "registro",
+        nombres,
+        apellidos,
+        email,
+        sistema_operativo: sistema,
+        navegador,
+        idioma,
+        ciudad,
+        pais,
+        latitud: lat,
+        longitud: lng,
+        user_agent: userAgent
+    })
+})
+.then(() => {
+    console.log("ENVIADO");
+})
+.catch(err => {
+    console.error(err);
+});
+
+
+
+        
 
         mensaje.innerHTML = "✅ Registrado. Gracias por ser parte de este proyecto local";
         mensaje.style.color = "green";
